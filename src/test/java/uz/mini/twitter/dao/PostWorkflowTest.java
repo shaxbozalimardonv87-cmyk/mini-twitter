@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import uz.mini.twitter.entity.Post;
 import uz.mini.twitter.entity.User;
 import uz.mini.twitter.util.HibernateUtil;
+import uz.mini.twitter.util.Passwords;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,6 +21,25 @@ class PostWorkflowTest {
         User user = User.builder().fullName("Test Author").username("author").password("test-only").build();
         users.save(user);
         assertTrue(users.existsByUsername("author"));
+        users.upgradeLegacyPasswords();
+        String migrated = users.findByUsername("author").getPassword();
+        assertNotEquals("test-only", migrated);
+        assertTrue(Passwords.matches("test-only", migrated));
+        assertTrue(users.findByUsername("author").getPasswordHashed());
+        String prefixPassword = "pbkdf2-sha256$hello";
+        User prefixUser = User.builder().fullName("Legacy").username("prefix")
+                .password(prefixPassword).build();
+        users.save(prefixUser);
+        String hashShapedPassword = Passwords.hash("legacy-original");
+        users.save(User.builder().fullName("Legacy formatted").username("formatted")
+                .password(hashShapedPassword).build());
+        users.upgradeLegacyPasswords();
+        assertEquals(migrated, users.findByUsername("author").getPassword());
+        assertTrue(Passwords.matches(prefixPassword, users.findByUsername("prefix").getPassword()));
+        assertTrue(Passwords.matches(hashShapedPassword, users.findByUsername("formatted").getPassword()));
+        String migratedPrefix = users.findByUsername("prefix").getPassword();
+        users.upgradeLegacyPasswords();
+        assertEquals(migratedPrefix, users.findByUsername("prefix").getPassword());
         Post post = Post.builder().title("Salom").description("O‘zbekcha matn")
                 .createdAt(LocalDateTime.now()).user(user).build();
         posts.save(post);

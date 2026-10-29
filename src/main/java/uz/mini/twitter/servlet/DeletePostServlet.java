@@ -17,7 +17,7 @@ public class DeletePostServlet extends HttpServlet {
     private final PostDao postDao = new PostDao();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         Long postId = PostInput.id(req.getParameter("id"));

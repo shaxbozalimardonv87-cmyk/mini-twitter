@@ -7,6 +7,26 @@
     <display-name>Mini Twitter</display-name>
     <request-character-encoding>UTF-8</request-character-encoding>
     <response-character-encoding>UTF-8</response-character-encoding>
+    <filter>
+        <filter-name>csrf</filter-name>
+        <filter-class>uz.mini.twitter.filter.CsrfFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>csrf</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter>
+        <filter-name>auth</filter-name>
+        <filter-class>uz.mini.twitter.filter.AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>auth</filter-name>
+        <url-pattern>/add-post</url-pattern>
+        <url-pattern>/my-posts</url-pattern>
+        <url-pattern>/edit-post</url-pattern>
+        <url-pattern>/delete-post</url-pattern>
+        <url-pattern>/logout</url-pattern>
+    </filter-mapping>
 
     <welcome-file-list>
         <welcome-file>home</welcome-file>

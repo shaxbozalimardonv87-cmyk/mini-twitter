@@ -1,20 +1,12 @@
 package uz.mini.twitter.filter;
 
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebFilter(urlPatterns = {
-        "/add-post",
-        "/my-posts",
-        "/edit-post",
-        "/delete-post",
-        "/logout"
-})
 public class AuthFilter implements Filter {
 
     @Override

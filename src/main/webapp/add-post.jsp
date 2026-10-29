@@ -24,6 +24,7 @@
         <div class="error"><c:out value="${error}"/></div>
     </c:if>
     <form method="post" action="${pageContext.request.contextPath}/add-post">
+        <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
         <input type="text" name="title" maxlength="255" value="<c:out value='${title}'/>" placeholder="Title" required>
         <textarea name="description" maxlength="255" placeholder="Description" required><c:out value="${description}"/></textarea>
         <button type="submit">Post</button>

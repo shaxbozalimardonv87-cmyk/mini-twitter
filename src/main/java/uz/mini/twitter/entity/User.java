@@ -26,7 +26,12 @@ public class User {
     private String username;
 
     @Column(name = "password", nullable = false)
+    @ToString.Exclude
     private String password;
+
+    // Null marks a record written by the previous plaintext implementation.
+    @Column(name = "password_hashed")
+    private Boolean passwordHashed;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts;

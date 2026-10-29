@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import uz.mini.twitter.dao.UserDao;
 import uz.mini.twitter.entity.User;
+import uz.mini.twitter.util.Passwords;
+import uz.mini.twitter.filter.CsrfFilter;
 
 import java.io.IOException;
 
@@ -31,13 +33,17 @@ public class LoginServlet extends HttpServlet {
 
         User user = userDao.findByUsername(username);
 
-        if (user == null || !user.getPassword().equals(password)) {
+        if (user == null || !Boolean.TRUE.equals(user.getPasswordHashed())
+                || !Passwords.matches(password, user.getPassword())) {
             req.setAttribute("error", "Username yoki parol xato.");
             req.getRequestDispatcher("/login.jsp").forward(req, resp);
             return;
         }
 
         HttpSession session = req.getSession(true);
+        req.changeSessionId();
+        CsrfFilter.rotate(session);
+        user.setPassword(null);
         session.setAttribute("user", user);
 
         resp.sendRedirect(req.getContextPath() + "/home");

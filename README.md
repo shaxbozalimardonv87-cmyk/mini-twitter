@@ -79,11 +79,32 @@ Deploy `target/mini-twitter.war` and open `http://localhost:8080/mini-twitter/`.
 mvn test
 ```
 
-Six tests cover servlet input validation, form forwarding, session-user attribution, persistence CRUD, and a complete HTTP workflow on embedded Tomcat with an isolated H2 test database. The HTTP test registers and logs in users, creates and renders a post, checks escaped HTML and Uzbek text, edits and deletes it, and rejects changes by another user. Tests use neither your PostgreSQL database nor real user data.
+Eight tests cover servlet input validation, form forwarding, session-user attribution, persistence CRUD, and a complete HTTP workflow on embedded Tomcat with an isolated H2 test database. The HTTP test registers and logs in users, creates and renders a post, checks escaped HTML and Uzbek text, edits and deletes it, and rejects changes by another user. Security checks also reject missing, incorrect, cross-session, and stale CSRF tokens and verify salted password hashes and legacy-account migration. Tests use neither your PostgreSQL database nor real user data.
+
+## Authentication and CSRF protection
+
+- Passwords use PBKDF2-HMAC-SHA256 with 600,000 iterations, a fresh 128-bit salt per password, and constant-time hash comparison. Raw passwords are not stored in newly registered accounts or kept in the HTTP session.
+- A central filter checks a cryptographically random session-bound CSRF token on every unsafe request, including login and registration. HTML forms submit `_csrf`; API-style clients may use `X-CSRF-Token`.
+- Successful login changes the session ID and rotates the CSRF token. Delete and logout accept POST only; GET/HEAD do not mutate data.
+- At startup, the application upgrades previous plaintext records before serving traffic. The nullable `users.password_hashed` marker distinguishes old records from encoded hashes, including legacy passwords that happen to look like a hash. Repeated startup does not rehash migrated records. Back up existing data before upgrading; do not run the old plaintext-writing version alongside this version.
+- With `DB_SCHEMA_ACTION=validate`, provision the new marker column before deploying: `ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hashed boolean;`. The local default `update` mode adds it automatically.
+
+Design references: [OWASP password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html) and [OWASP CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
+
+## Docker + PostgreSQL verification
+
+After starting a disposable Compose deployment, run the reproducible HTTP/database check:
+
+```bash
+docker compose -p mini-twitter-security-check up --build -d
+python3 scripts/docker_smoke_test.py
+```
+
+The script only accepts a localhost endpoint. It creates disposable accounts in the named test deployment, verifies stored password hashes, tests CSRF failures and posting, restarts the application to verify persistent PostgreSQL data, and checks logout. It never uses real user accounts.
 
 ## Project scope
 
-This is an educational application with a working core posting workflow. Password hashing, CSRF protection, and versioned database migrations remain production-hardening work. Local Docker configuration binds the app to `127.0.0.1`; it is intended for development and demonstrations.
+This is an educational application with a working core posting workflow. Versioned database migrations, rate limiting and production operational controls remain deployment work. Local Docker configuration binds the app to `127.0.0.1`; it is intended for development and demonstrations.
 
 ## Author
 

@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import uz.mini.twitter.dao.UserDao;
 import uz.mini.twitter.entity.User;
+import uz.mini.twitter.util.Passwords;
 
 import java.io.IOException;
 
@@ -46,7 +47,7 @@ public class RegisterServlet extends HttpServlet {
         }
 
         User user = User.builder().fullName(fullName.strip())
-                .username(username.strip()).password(password).build();
+                .username(username.strip()).password(Passwords.hash(password)).passwordHashed(true).build();
         userDao.save(user);
 
         resp.sendRedirect(req.getContextPath() + "/login");

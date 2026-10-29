@@ -34,8 +34,12 @@
             <p class="post-meta">${post.createdAt}</p>
             <div class="actions">
                 <a href="${pageContext.request.contextPath}/edit-post?id=${post.id}">Edit</a>
-                <a href="${pageContext.request.contextPath}/delete-post?id=${post.id}"
-                   onclick="return confirm('Postni o\'chirishni tasdiqlaysizmi?');">Delete</a>
+                <form method="post" action="${pageContext.request.contextPath}/delete-post" style="display:inline;"
+                      onsubmit="return confirm('Postni oʻchirishni tasdiqlaysizmi?');">
+                    <input type="hidden" name="id" value="${post.id}">
+                    <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
+                    <button type="submit">Delete</button>
+                </form>
             </div>
         </div>
     </c:forEach>
