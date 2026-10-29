@@ -20,7 +20,11 @@ public class DeletePostServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        Long postId = Long.valueOf(req.getParameter("id"));
+        Long postId = PostInput.id(req.getParameter("id"));
+        if (postId == null) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
         Post post = postDao.findById(postId);
 
         User currentUser = (User) req.getSession(false).getAttribute("user");

@@ -12,7 +12,7 @@
     <c:if test="${not empty sessionScope.user}">
         <a href="${pageContext.request.contextPath}/add-post" style="color:#fff; text-decoration:none;">Add Post</a>
         <a href="${pageContext.request.contextPath}/my-posts" style="color:#fff; text-decoration:none;">My Posts</a>
-        <span style="margin-left:auto; color:#8899a6;">Hi, ${sessionScope.user.fullName}</span>
+        <span style="margin-left:auto; color:#8899a6;">Hi, <c:out value="${sessionScope.user.fullName}"/></span>
         <a href="${pageContext.request.contextPath}/logout" style="color:#fff; text-decoration:none;">Logout</a>
     </c:if>
 </nav>

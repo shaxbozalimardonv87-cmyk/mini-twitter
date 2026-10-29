@@ -19,9 +19,9 @@ Developed as a Java web development course project. It demonstrates HTTP request
 - Registration, login, logout, and HTTP session handling.
 - A home feed ordered by post creation date.
 - A personal posts page for the signed-in user.
-- Post editing and deletion handlers with ownership checks.
+- Post creation, editing, and deletion with ownership checks and server-side input validation.
 - An authentication filter protecting user-specific routes.
-- JSP pages and navigation, with `User` and `Post` entities persisted through DAO classes.
+- UTF-8 JSP pages with escaped user-generated content, plus `User` and `Post` entities persisted through DAO classes.
 
 ## Request flow
 
@@ -44,24 +44,46 @@ src/main/resources/META-INF/persistence.xml
 src/main/webapp/                    JSP views
 ```
 
-## Local setup
+## Run locally
 
-Use JDK 17, Maven, PostgreSQL, and a Jakarta Servlet 6.0-compatible container such as Tomcat 10.1.
+### Docker Compose
 
-1. Clone this repository.
-2. Create a local PostgreSQL database and schema. The checked-in configuration targets `library_db` and `books_schema`; adjust them to your environment.
-3. Set your local database URL, username, and password in `src/main/resources/META-INF/persistence.xml`. Use a disposable development database: the current configuration enables schema creation.
-4. Build the WAR:
+With Docker and Compose installed:
 
 ```bash
+git clone https://github.com/shaxbozalimardonv87-cmyk/exam_for_module_7.git
+cd exam_for_module_7
+docker compose up --build
+```
+
+Open **http://localhost:8080**. Compose starts PostgreSQL, waits for database readiness, builds the WAR with Java 17, and deploys it to Tomcat 10.1. Register an account, log in, select **Add Post**, and manage your posts under **My Posts**.
+
+`docker compose down` stops the application. Database contents remain in the named volume. The Compose password is a local development default; set `DB_PASSWORD` in your environment to change it.
+
+### Existing PostgreSQL / Tomcat
+
+Use JDK 17, Maven, PostgreSQL, and a Jakarta Servlet 6.0-compatible container such as Tomcat 10.1. Create a database, then configure the **Tomcat process environment**:
+
+```bash
+export DB_URL=jdbc:postgresql://localhost:5432/mini_twitter
+export DB_USERNAME=postgres
+export DB_PASSWORD=your-local-password
 mvn clean package
 ```
 
-5. Deploy `target/mini-twitter.war` to your servlet container and open its application context, normally `http://localhost:8080/mini-twitter/`.
+Deploy `target/mini-twitter.war` and open `http://localhost:8080/mini-twitter/`. The default database name is `mini_twitter`; no custom schema is required. Hibernate creates missing tables and uses `update` rather than recreating tables on every startup. For a managed database, set `DB_SCHEMA_ACTION=validate` after provisioning its schema.
 
-## Project scope and next steps
+## Tests
 
-This is an educational implementation. Before production use, password hashing, CSRF protection, non-destructive schema migrations, and automated integration tests should be added. The repository includes an add-post form, but the corresponding `/add-post` servlet is not present in the current source tree; that workflow still needs completion.
+```bash
+mvn test
+```
+
+Six tests cover servlet input validation, form forwarding, session-user attribution, persistence CRUD, and a complete HTTP workflow on embedded Tomcat with an isolated H2 test database. The HTTP test registers and logs in users, creates and renders a post, checks escaped HTML and Uzbek text, edits and deletes it, and rejects changes by another user. Tests use neither your PostgreSQL database nor real user data.
+
+## Project scope
+
+This is an educational application with a working core posting workflow. Password hashing, CSRF protection, and versioned database migrations remain production-hardening work. Local Docker configuration binds the app to `127.0.0.1`; it is intended for development and demonstrations.
 
 ## Author
 

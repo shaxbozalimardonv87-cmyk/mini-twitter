@@ -19,9 +19,10 @@
 
 <div class="form-box">
     <h2>Postni tahrirlash</h2>
+    <c:if test="${not empty error}"><p role="alert"><c:out value="${error}"/></p></c:if>
     <form method="post" action="${pageContext.request.contextPath}/edit-post?id=${post.id}">
-        <input type="text" name="title" value="${post.title}" required>
-        <textarea name="description" required>${post.description}</textarea>
+        <input type="text" name="title" maxlength="255" value="<c:out value='${post.title}'/>" required>
+        <textarea name="description" maxlength="255" required><c:out value="${post.description}"/></textarea>
         <button type="submit">Saqlash</button>
     </form>
 </div>

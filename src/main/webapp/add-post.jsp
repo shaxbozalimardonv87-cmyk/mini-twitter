@@ -21,11 +21,11 @@
 <div class="form-box">
     <h2>Yangi post</h2>
     <c:if test="${not empty error}">
-        <div class="error">${error}</div>
+        <div class="error"><c:out value="${error}"/></div>
     </c:if>
     <form method="post" action="${pageContext.request.contextPath}/add-post">
-        <input type="text" name="title" placeholder="Title" required>
-        <textarea name="description" placeholder="Description" required></textarea>
+        <input type="text" name="title" maxlength="255" value="<c:out value='${title}'/>" placeholder="Title" required>
+        <textarea name="description" maxlength="255" placeholder="Description" required><c:out value="${description}"/></textarea>
         <button type="submit">Post</button>
     </form>
 </div>

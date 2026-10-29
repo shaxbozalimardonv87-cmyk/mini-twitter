@@ -22,7 +22,7 @@
 <div class="form-box">
     <h2>Register</h2>
     <c:if test="${not empty error}">
-        <div class="error">${error}</div>
+        <div class="error"><c:out value="${error}"/></div>
     </c:if>
     <form method="post" action="${pageContext.request.contextPath}/register">
         <input type="text" name="fullName" placeholder="Full Name" required>

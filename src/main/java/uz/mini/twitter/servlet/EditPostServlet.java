@@ -21,7 +21,11 @@ public class EditPostServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        Long postId = Long.valueOf(req.getParameter("id"));
+        Long postId = PostInput.id(req.getParameter("id"));
+        if (postId == null) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
         Post post = postDao.findById(postId);
 
         User currentUser = (User) req.getSession(false).getAttribute("user");
@@ -39,9 +43,13 @@ public class EditPostServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        Long postId = Long.valueOf(req.getParameter("id"));
-        String title = req.getParameter("title");
-        String description = req.getParameter("description");
+        Long postId = PostInput.id(req.getParameter("id"));
+        if (postId == null) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+        String title = PostInput.clean(req.getParameter("title"));
+        String description = PostInput.clean(req.getParameter("description"));
 
         Post post = postDao.findById(postId);
         User currentUser = (User) req.getSession(false).getAttribute("user");
@@ -51,6 +59,13 @@ public class EditPostServlet extends HttpServlet {
             return;
         }
 
+        if (!PostInput.valid(title, description)) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            req.setAttribute("post", post);
+            req.setAttribute("error", PostInput.ERROR);
+            req.getRequestDispatcher("/edit-post.jsp").forward(req, resp);
+            return;
+        }
         post.setTitle(title);
         post.setDescription(description);
         postDao.update(post);

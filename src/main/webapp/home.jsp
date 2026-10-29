@@ -25,10 +25,10 @@
 
     <c:forEach var="post" items="${posts}">
         <div class="post">
-            <p class="post-title">${post.title}</p>
-            <p class="post-desc">${post.description}</p>
+            <p class="post-title"><c:out value="${post.title}"/></p>
+            <p class="post-desc"><c:out value="${post.description}"/></p>
             <p class="post-meta">
-                @${post.user.username} (${post.user.fullName}) &middot; ${post.createdAt}
+                @<c:out value="${post.user.username}"/> (<c:out value="${post.user.fullName}"/>) &middot; ${post.createdAt}
             </p>
         </div>
     </c:forEach>

@@ -46,7 +46,8 @@ public class PostDao {
     public Post findById(Long id) {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
-            return em.find(Post.class, id);
+            return em.createQuery("SELECT p FROM Post p JOIN FETCH p.user WHERE p.id = :id", Post.class)
+                    .setParameter("id", id).getResultStream().findFirst().orElse(null);
         } finally {
             em.close();
         }

@@ -29,8 +29,8 @@
 
     <c:forEach var="post" items="${posts}">
         <div class="post">
-            <p class="post-title">${post.title}</p>
-            <p class="post-desc">${post.description}</p>
+            <p class="post-title"><c:out value="${post.title}"/></p>
+            <p class="post-desc"><c:out value="${post.description}"/></p>
             <p class="post-meta">${post.createdAt}</p>
             <div class="actions">
                 <a href="${pageContext.request.contextPath}/edit-post?id=${post.id}">Edit</a>

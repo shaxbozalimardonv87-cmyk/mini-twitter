@@ -25,13 +25,15 @@ public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String fullName = req.getParameter("fullName");
-        String username = req.getParameter("username");
+        String fullName = PostInput.clean(req.getParameter("fullName"));
+        String username = PostInput.clean(req.getParameter("username"));
         String password = req.getParameter("password");
 
         if (fullName == null || fullName.isBlank()
                 || username == null || username.isBlank()
-                || password == null || password.isBlank()) {
+                || password == null || password.isBlank()
+                || fullName.length() > 255 || username.length() > 255 || password.length() > 255) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             req.setAttribute("error", "Barcha maydonlarni to'ldiring.");
             req.getRequestDispatcher("/register.jsp").forward(req, resp);
             return;
@@ -43,7 +45,8 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        User user = new User(fullName, username, password);
+        User user = User.builder().fullName(fullName.strip())
+                .username(username.strip()).password(password).build();
         userDao.save(user);
 
         resp.sendRedirect(req.getContextPath() + "/login");
