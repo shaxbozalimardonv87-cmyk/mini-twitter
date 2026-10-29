@@ -1,8 +1,10 @@
 # Mini Twitter — Java Web Application
 
+[![Java CI](https://github.com/shaxbozalimardonv87-cmyk/mini-twitter/actions/workflows/java-ci.yml/badge.svg)](https://github.com/shaxbozalimardonv87-cmyk/mini-twitter/actions/workflows/java-ci.yml)
+
 **A server-rendered social posting project built with Jakarta Servlets, JSP, Hibernate, and PostgreSQL.**
 
-Developed as a Java web development course project. It demonstrates HTTP request handling, session authentication, relational persistence, and separating web handlers from database access. The repository retains its original name, `exam_for_module_7`.
+Developed as a Java web development course project. It demonstrates HTTP request handling, session authentication, relational persistence, and separating web handlers from database access. Originally developed as a course project; now maintained as a runnable backend portfolio application.
 
 ## Technology stack
 
@@ -51,8 +53,8 @@ src/main/webapp/                    JSP views
 With Docker and Compose installed:
 
 ```bash
-git clone https://github.com/shaxbozalimardonv87-cmyk/exam_for_module_7.git
-cd exam_for_module_7
+git clone https://github.com/shaxbozalimardonv87-cmyk/mini-twitter.git
+cd mini-twitter
 docker compose up --build
 ```
 
